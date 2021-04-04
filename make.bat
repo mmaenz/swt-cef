@@ -47,12 +47,12 @@ rmdir /s /q build
 cd ../..
 
 :: Mavenize everything
-cd java
-call "%MAVEN_DIR%\mvn" -version
-call "%MAVEN_DIR%\mvn" clean
-call "%MAVEN_DIR%\mvn" versions:set -DnewVersion=0.0.1-SNAPSHOT-win
-call "%MAVEN_DIR%\mvn" package
-call "%MAVEN_DIR%\mvn" source:jar install
+:: cd java
+:: call "%MAVEN_DIR%\mvn" -version
+:: call "%MAVEN_DIR%\mvn" clean
+:: call "%MAVEN_DIR%\mvn" versions:set -DnewVersion=0.0.1-SNAPSHOT-win
+:: call "%MAVEN_DIR%\mvn" package
+:: call "%MAVEN_DIR%\mvn" source:jar install
 :: call "%MAVEN_DIR%\mvn" exec:java -Dexec.mainClass="de.ict.Test"
 :: call "%MAVEN_DIR%\mvn" exec:java -Dexec.mainClass="de.ict.OcctTest" -Dexec.args="<path to step model>"
-cd ..
+:: cd ..

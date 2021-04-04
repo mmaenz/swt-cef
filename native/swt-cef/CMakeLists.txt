@@ -16,7 +16,7 @@ set(JAVA_RES_DIR "${CMAKE_SOURCE_DIR}/../../java/src/main/resources/os/win32/x86
 ExternalProject_Add(cef-minimal
 	PREFIX ${CEF_PREFIX}
     #URL https://cef-builds.spotifycdn.com/cef_binary_89.0.17+ge7bbb1d+chromium-89.0.4389.114_windows64_minimal.tar.bz2
-	URL file://D:/12_Dev/Git/swt-cef/download/cef_binary_89.0.17+ge7bbb1d+chromium-89.0.4389.114_windows64_minimal.zip
+	URL file://D:/12_Dev/Git/swt-cef/dependencies/cef_binary_89.0.17+ge7bbb1d+chromium-89.0.4389.114_windows64_minimal.zip
 	#URL https://cef-builds.spotifycdn.com/cef_binary_73.1.13+g6e3c989+chromium-73.0.3683.75_windows64_minimal.tar.bz2
 	INSTALL_COMMAND cmake -E copy_directory ${CEF_PREFIX}/src/cef-minimal/include ${CEF_DIR}/include
         COMMAND cmake -E copy_directory ${CEF_PREFIX}/src/cef-minimal/Release ${CEF_DIR}/lib
@@ -30,7 +30,7 @@ ExternalProject_Add(jdk
 	PREFIX ${JDK_PREFIX}
     #URL https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk11u-2021-03-25-04-28/OpenJDK11U-jdk_x64_windows_hotspot_2021-03-25-04-28.zip 
     #https://cef-builds.spotifycdn.com/cef_binary_73.1.13+g6e3c989+chromium-73.0.3683.75_windows64_minimal.tar.bz2
-    URL file://D:/12_Dev/Git/swt-cef/download/OpenJDK11U-jdk_x64_windows_hotspot_2021-03-25-04-28.zip
+    URL file://D:/12_Dev/Git/swt-cef/dependencies/OpenJDK11U-jdk_x64_windows_hotspot_2021-03-25-04-28.zip
 	CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND cmake -E copy_directory ${JDK_PREFIX}/src/jdk ${CEF_DIR}/jdk
