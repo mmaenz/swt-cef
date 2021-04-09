@@ -34,6 +34,9 @@ public class Activator implements BundleActivator {
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		Activator.context = null;
+		//NativeLoader.setNativeOsgiResolver(false);
+		NativeLoader.setNativeOsgiResolver(true);
+		NativeLoader.load();
 	}
 
 	public static File getBundleLocation(IPath path) throws URISyntaxException, IOException {

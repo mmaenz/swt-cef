@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.DPIUtil;
+import org.eclipse.swt.internal.Platform;
 //import org.eclipse.swt.internal.gtk.GDK;
 //import org.eclipse.swt.internal.gtk.GTK;
 //import org.eclipse.swt.internal.gtk.GdkWindowAttr;
@@ -26,96 +27,100 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Listener;
 
 public class Chromium extends Canvas {
-
+	static final String USE_OWNDC_KEY = "org.eclipse.swt.internal.win32.useOwnDC";
+	static long window = 0;
+	static boolean init = true;
+	
 	static {
-		try {
-			File cefLibDir = Activator.getBundleLocation(new Path("cef/lib/libswt-cef.so"));
-			System.load(cefLibDir.getAbsolutePath());
-		} catch (URISyntaxException | IOException e) {
-			Activator.log("Error loading cef library", e);
-		}
+		NativeLoader.load();
 	}
 
-	private long chromiumWindow;
-	private long xWindow;
+	static int checkStyle(Composite parent, int style) {
+		if (parent != null) {
+			parent.getDisplay().setData(USE_OWNDC_KEY, true);
+		}
+		return style;
+	}
 
 	public Chromium(Composite parent, int style) {
-		super(parent, style);
+		super(parent, checkStyle(parent, style));
+		parent.getDisplay().setData(USE_OWNDC_KEY, false);
+		window = getHandle();
 
-		long window = handle;
-		
-		/*
-		GTK.gtk_widget_realize(handle);
-		long window = GTK.gtk_widget_get_window(handle);
-
-		GdkWindowAttr attrs = new GdkWindowAttr();
-		attrs.width = 1;
-		attrs.height = 1;
-		attrs.event_mask = GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK | GDK.GDK_FOCUS_CHANGE_MASK
-				| GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK
-				| GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK | GDK.GDK_EXPOSURE_MASK
-				| GDK.GDK_POINTER_MOTION_HINT_MASK;
-		attrs.window_type = GDK.GDK_WINDOW_CHILD;
-
-		*/
-		Listener listener = event -> {
-			switch (event.type) {
-			case SWT.Resize:
-				Rectangle clientArea = DPIUtil.autoScaleUp(getClientArea());
-				break;
-			case SWT.Dispose:
-				if (chromiumWindow != 0) {
-					dispose();
-					chromiumWindow = 0;
-				}
-				break;
-			}
-		};
-		addListener(SWT.Resize, listener);
-		addListener(SWT.Dispose, listener);
-
-		getDisplay().timerExec(1000, () -> {
-			start(xWindow);
-			Runnable loop = new Runnable() {
-				@Override
-				public void run() {
-					System.out.println("working");
-					work();
-					System.out.println("  done");
-					getDisplay().timerExec(20, this);
-				}
-			};
-			getDisplay().timerExec(20, loop);
+		addListener(SWT.Resize, resizeEvent -> {
+			Rectangle rect = parent.getClientArea(); 
+			setBounds(rect);
+			update();
+			redraw();
 		});
+		
+		addDisposeListener(disposeEvent -> {
+			if (window != 0) {
+				release();
+				dispose();
+				window = 0;
+			}
+		});
+
+		addPaintListener(paintevent -> {
+			if (init) {
+				init = false;
+				final Rectangle rectangle = getClientArea();
+				try {
+					init(window);
+					long t = CreateBrowser("iconten.de");
+				} catch (final Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				}});
+		//init(window);
 	}
 
+	public long CreateBrowser(String url) {
+		return create(window, url);
+	}
+	
+	public void Work() {
+		work();
+	}
+	
+	native static int init(long parentId);
+	//native static int init(long parentId, int x, int y, int width, int height);
+	native static long create(long parentId, String url);
+	
+	native static int work();
+
+	native static int release();
+
+	/**
+	 * The handle to the native window. <b>IMPORTANT:</b> This field is <em>not</em>
+	 * part of the SWT public API and it is available only on Windows-OS.
+	 * 
+	 * 
+	 * @return native HWnd on Windows-OS
+	 * @throws Exception
+	 */
 	public long getHandle() {
 		long handle = 0;
 		java.lang.reflect.Field _viewField;
 		java.lang.reflect.Field _idField;
 		try {
-			/*
-			if (Platform.isMac()) {
+			if (NativeLoader.isMac()) {
 				_viewField = Control.class.getDeclaredField("view");
 				final Object view = _viewField.get(this);
 				final Class<?> idClass = Class.forName("org.eclipse.swt.internal.cocoa.id");
 				_idField = idClass.getDeclaredField("id");
 				handle = _idField.getLong(view);
-			} else {*/
+			} else {
 				_idField = Control.class.getDeclaredField("handle");
 				handle = _idField.getLong(this);
-			//}
+			}
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 		return handle;
-	}
-
-	native static int start(long parentId);
-
-	native static int work();
-
-	public void setUrl(String url) {
 	}
 
 }

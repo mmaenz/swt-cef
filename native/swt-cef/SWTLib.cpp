@@ -2,50 +2,64 @@
 #include "ClientHandler.h"
 #include <jni.h>
 
+#include <direct.h>
 #include <windows.h>
 
+char szWorkingDir[MAX_PATH];  // The current working directory
+bool message_loop = false;
+HWND mainBrowserHandle = NULL;
+
 extern "C"
-JNIEXPORT int Java_org_eclipse_swt_cef_Chromium_start(JNIEnv *env, jclass cls, jlong parentId)
-{
-    long long handle = (long long)parentId;
-    CefMainArgs main_args;
-
-    CefRefPtr<SWTApp> app(new SWTApp(handle));
-
-    // Execute the secondary process, if any.
-    int exit_code = CefExecuteProcess(main_args, app.get(), NULL);
-
-    if (exit_code >= 0) {
-        exit(exit_code);
+JNIEXPORT int Java_org_eclipse_swt_cef_Chromium_init(JNIEnv *env, jclass cls, jlong handle) {
+    if (_getcwd(szWorkingDir, MAX_PATH) == NULL) {
+        szWorkingDir[0] = 0;
     }
+    CefString workingPath = CefString(szWorkingDir);
 
-    // Register the window class.
-    HWND hwnd = (HWND)handle;
-
-    RECT rect;
-    GetClientRect(hwnd, &rect);
-
+    CefMainArgs main_args(GetModuleHandle(NULL));
     CefSettings settings;
-    CefInitialize(main_args, settings, app.get(), NULL);
-    CefWindowInfo        info;
-    CefBrowserSettings   b_settings;
-    CefRefPtr<CefClient> client(new ClientHandler);
-    std::string path = "https://google.de";
-    CefRefPtr<CefCommandLine> command_line = CefCommandLine::GetGlobalCommandLine();
 
-    if (command_line->HasSwitch("url")) {
-        path = command_line->GetSwitchValue("url");
-    }
+    CefRefPtr<SWTApp> app(new SWTApp((long)((void*)handle)));
 
-    info.SetAsChild(hwnd, rect);
-    CefBrowserHost::CreateBrowser(info, client.get(), path, b_settings, NULL, NULL);
-    int result = 0;	return 0;
+#ifdef _DEBUG
+    CefString debugPath = CefString("D:\\12_Dev\\Git\\swt-cef\\java\\target\\classes\\os\\win32\\x86_64");
+    CefString(&settings.browser_subprocess_path) = debugPath.ToString() + "\\subProcess.exe";
+#else
+    CefString(&settings.browser_subprocess_path) = workingPath.ToString() + "\\subProcess.exe";
+#endif
+
+    settings.multi_threaded_message_loop = message_loop;
+    settings.log_severity = LOGSEVERITY_DISABLE;
+    settings.no_sandbox = true;
+
+    CefInitialize(main_args, settings, app, NULL);
 }
 
 extern "C"
+JNIEXPORT jlong Java_org_eclipse_swt_cef_Chromium_create(JNIEnv * env, jclass cls, jlong parentId, jstring url) {
+    // Register the window class.
+    HWND hMain = (HWND)((void*)parentId);
+
+    const char* chr = (char*)env->GetStringUTFChars(url, 0);
+    CefString pageURL = CefString(chr);
+    env->ReleaseStringUTFChars(url, chr);
+
+    CefWindowInfo        info;
+    CefBrowserSettings   b_settings;
+    CefRefPtr<CefClient> client(new ClientHandler);
+
+    RECT rect;
+    GetClientRect(hMain, &rect);
+    info.SetAsChild(hMain, rect);
+    //info.SetAsPopup(hMain, CefString("Window"));
+
+    CefBrowserHost::CreateBrowser(info, client.get(), pageURL, b_settings, NULL, NULL);
+    return ((jlong)(void*)client);
+}
+extern "C"
 JNIEXPORT int Java_org_eclipse_swt_cef_Chromium_work()
 {
-	CefDoMessageLoopWork();
+	CefRunMessageLoop();
 	return 0;
 }
 

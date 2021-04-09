@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
 	CefSettings settings;
 	settings.no_sandbox = true;
-	CefString(&settings.locales_dir_path).FromASCII("/home/dschaefer/eclipse/workspaces/ceftest/org.eclipse.swt.cef/cef/lib/locales");
+	//CefString(&settings.locales_dir_path).FromASCII("/home/dschaefer/eclipse/workspaces/ceftest/org.eclipse.swt.cef/cef/lib/locales");
 
 	CefInitialize(main_args, settings, app.get(), NULL);
 

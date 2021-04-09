@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "swt-cef", "swt-cef\swt-cef.vcxproj", "{A852C1BB-984F-4139-B6BB-43896EDA2A75}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "swt-cef-test", "swt-cef-test\swt-cef-test.vcxproj", "{B5C2494E-DA7F-45F9-8015-675AB4D3ACEE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A852C1BB-984F-4139-B6BB-43896EDA2A75} = {A852C1BB-984F-4139-B6BB-43896EDA2A75}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +26,14 @@ Global
 		{A852C1BB-984F-4139-B6BB-43896EDA2A75}.Release|x64.Build.0 = Release|x64
 		{A852C1BB-984F-4139-B6BB-43896EDA2A75}.Release|x86.ActiveCfg = Release|Win32
 		{A852C1BB-984F-4139-B6BB-43896EDA2A75}.Release|x86.Build.0 = Release|Win32
+		{B5C2494E-DA7F-45F9-8015-675AB4D3ACEE}.Debug|x64.ActiveCfg = Debug|x64
+		{B5C2494E-DA7F-45F9-8015-675AB4D3ACEE}.Debug|x64.Build.0 = Debug|x64
+		{B5C2494E-DA7F-45F9-8015-675AB4D3ACEE}.Debug|x86.ActiveCfg = Debug|Win32
+		{B5C2494E-DA7F-45F9-8015-675AB4D3ACEE}.Debug|x86.Build.0 = Debug|Win32
+		{B5C2494E-DA7F-45F9-8015-675AB4D3ACEE}.Release|x64.ActiveCfg = Release|x64
+		{B5C2494E-DA7F-45F9-8015-675AB4D3ACEE}.Release|x64.Build.0 = Release|x64
+		{B5C2494E-DA7F-45F9-8015-675AB4D3ACEE}.Release|x86.ActiveCfg = Release|Win32
+		{B5C2494E-DA7F-45F9-8015-675AB4D3ACEE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
